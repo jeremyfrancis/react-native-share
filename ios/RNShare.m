@@ -43,9 +43,10 @@
 #import "GenericShare.h"
 #import "WhatsAppShare.h"
 #import "InstagramShare.h"
-#import "InstagramStories.h"
 #import "GooglePlusShare.h"
 #import "EmailShare.h"
+
+#import "ShareItem.h"
 
 @implementation RNShare
 - (dispatch_queue_t)methodQueue
@@ -79,12 +80,7 @@ RCT_EXPORT_MODULE()
     @"GOOGLEPLUS": @"googleplus",
     @"WHATSAPP": @"whatsapp",
     @"INSTAGRAM": @"instagram",
-    @"INSTAGRAM_STORIES": @"instagram-stories",
     @"EMAIL": @"email",
-    
-    @"SHARE_BACKGROUND_IMAGE": @"shareBackgroundImage",
-    @"SHARE_STICKER_IMAGE": @"shareStickerImage",
-    @"SHARE_BACKGROUND_AND_STICKER_IMAGE": @"shareBackgroundAndStickerImage",
   };
 }
 
@@ -116,10 +112,6 @@ RCT_EXPORT_METHOD(shareSingle:(NSDictionary *)options
             NSLog(@"TRY OPEN instagram");
             InstagramShare *shareCtl = [[InstagramShare alloc] init];
             [shareCtl shareSingle:options failureCallback: failureCallback successCallback: successCallback];
-        } else if([social isEqualToString:@"instagram-stories"]) {
-            NSLog(@"TRY OPEN instagram-stories");
-            InstagramStories *shareCtl = [[InstagramStories alloc] init];
-            [shareCtl shareSingle:options failureCallback: failureCallback successCallback: successCallback];
         } else if([social isEqualToString:@"email"]) {
             NSLog(@"TRY OPEN email");
             EmailShare *shareCtl = [[EmailShare alloc] init];
@@ -141,9 +133,11 @@ RCT_EXPORT_METHOD(open:(NSDictionary *)options
     }
 
     NSMutableArray<id> *items = [NSMutableArray array];
-    NSString *message = [RCTConvert NSString:options[@"message"]];
+    NSString *message = [RCTConvert NSString:options[@"msg"]];
     if (message) {
-        [items addObject:message];
+//        [items addObject:message];
+        ShareItem *shareItem = [[ShareItem alloc] initWithPlaceholderItem:message];
+        [items addObject:shareItem];
     }
     NSArray *urlsArray = options[@"urls"];
     for (int i=0; i<urlsArray.count; i++) {
